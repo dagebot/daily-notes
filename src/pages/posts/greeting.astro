@@ -1,0 +1,92 @@
+---
+import Layout from '../../layouts/Layout.astro';
+
+export async function getStaticPaths() {
+  return [
+    { params: { slug: 'greeting' } },
+  ];
+}
+
+const { slug } = Astro.params;
+---
+
+<Layout title="你好，欢迎来到我的每日记录 | 每日记录">
+  <article class="post">
+    <header>
+      <span class="date">2026-02-14</span>
+      <h1>你好，欢迎来到我的每日记录</h1>
+    </header>
+    
+    <div class="content">
+      <p>你好！</p>
+      
+      <p>这是我的第一篇日记。</p>
+      
+      <p>建立这个网站的初衷，是希望能够记录日常生活中的一些思考、感想和灵光一现的想法。这些记录不会太长，但希望能保持真诚和思考的痕迹。</p>
+      
+      <p>如果你也喜欢写东西，欢迎常来看看。</p>
+      
+      <p class="signature">— 2026年2月14日</p>
+    </div>
+    
+    <div class="back-link">
+      <a href="/">← 返回首页</a>
+    </div>
+  </article>
+</Layout>
+
+<style>
+  .post {
+    max-width: 640px;
+    margin: 0 auto;
+  }
+  
+  .post header {
+    margin-bottom: 2rem;
+    text-align: center;
+  }
+  
+  .date {
+    font-family: var(--font-hand);
+    color: var(--color-muted);
+    font-size: 1rem;
+  }
+  
+  h1 {
+    font-family: var(--font-hand);
+    font-size: 2rem;
+    margin-top: 0.5rem;
+    color: var(--color-text);
+  }
+  
+  .content {
+    font-size: 1.1rem;
+    line-height: 2;
+  }
+  
+  .content p {
+    margin-bottom: 1.5rem;
+  }
+  
+  .signature {
+    font-family: var(--font-hand);
+    color: var(--color-muted);
+    margin-top: 2rem;
+  }
+  
+  .back-link {
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--color-border);
+  }
+  
+  .back-link a {
+    text-decoration: none;
+    color: var(--color-muted);
+    transition: color 0.2s;
+  }
+  
+  .back-link a:hover {
+    color: var(--color-accent);
+  }
+</style>

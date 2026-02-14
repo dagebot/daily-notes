@@ -1,0 +1,60 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="关于 | 每日记录">
+  <article class="about">
+    <h1>关于</h1>
+    
+    <div class="content">
+      <p>这是一个记录日常思考和感想的地方。</p>
+      
+      <p>不追求长篇大论，只想记录那些值得留住的瞬间和想法。</p>
+      
+      <p>用 Astro 构建，主题简约素雅，适合静心阅读。</p>
+    </div>
+    
+    <div class="back-link">
+      <a href="/">← 返回首页</a>
+    </div>
+  </article>
+</Layout>
+
+<style>
+  .about {
+    max-width: 640px;
+    margin: 0 auto;
+  }
+  
+  h1 {
+    font-family: var(--font-hand);
+    font-size: 2rem;
+    margin-bottom: 2rem;
+    text-align: center;
+  }
+  
+  .content {
+    font-size: 1.1rem;
+    line-height: 2;
+  }
+  
+  .content p {
+    margin-bottom: 1.5rem;
+  }
+  
+  .back-link {
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--color-border);
+  }
+  
+  .back-link a {
+    text-decoration: none;
+    color: var(--color-muted);
+    transition: color 0.2s;
+  }
+  
+  .back-link a:hover {
+    color: var(--color-accent);
+  }
+</style>
