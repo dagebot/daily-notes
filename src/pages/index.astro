@@ -1,14 +1,10 @@
 ---
+import { getCollection } from 'astro:content';
 import Layout from '../layouts/Layout.astro';
 
-const posts = [
-  {
-    slug: 'greeting',
-    title: '你好，欢迎来到我的每日记录',
-    date: '2026-02-14',
-    excerpt: '这是我的第一篇日记，记录一些日常的思考和想法...',
-  },
-];
+const posts = (await getCollection('posts')).sort(
+	(a, b) => new Date(b.data.date).valueOf() - new Date(a.data.date).valueOf()
+);
 ---
 
 <Layout title="每日记录">
@@ -20,11 +16,11 @@ const posts = [
   <section class="posts">
     {posts.map((post) => (
       <article class="post-card">
-        <span class="date">{post.date}</span>
+        <span class="date">{post.data.date}</span>
         <h2>
-          <a href={`/posts/${post.slug}`}>{post.title}</a>
+          <a href={`/posts/${post.slug}`}>{post.data.title}</a>
         </h2>
-        <p>{post.excerpt}</p>
+        <p>{post.data.excerpt}</p>
       </article>
     ))}
   </section>
