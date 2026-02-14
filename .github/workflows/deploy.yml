@@ -5,12 +5,21 @@ on:
     branches: [master]
   workflow_dispatch:
 
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write  # 关键：需要 write 权限才能 push
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          ref: master
 
       - name: Setup Node
         uses: actions/setup-node@v4
