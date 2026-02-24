@@ -1,0 +1,131 @@
+---
+interface Props {
+  posts: { slug: string; data: { date: string } }[];
+}
+
+const { posts } = Astro.props;
+
+// Get all dates with posts
+const postDates = new Set(posts.map(p => p.data.date));
+
+// Generate calendar data for current month
+const now = new Date();
+const year = now.getFullYear();
+const month = now.getMonth();
+
+const firstDay = new Date(year, month, 1);
+const lastDay = new Date(year, month + 1, 0);
+const startPadding = firstDay.getDay();
+const daysInMonth = lastDay.getDate();
+
+const monthName = `${year}-${String(month + 1).padStart(2, '0')}`;
+
+const days: { date: string | null; isToday: boolean; hasPost: boolean }[] = [];
+
+// Padding for first week
+for (let i = 0; i < startPadding; i++) {
+  days.push({ date: null, isToday: false, hasPost: false });
+}
+
+// Days of month
+for (let d = 1; d <= daysInMonth; d++) {
+  const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+  const isToday = d === now.getDate();
+  days.push({
+    date: dateStr,
+    isToday,
+    hasPost: postDates.has(dateStr)
+  });
+}
+---
+
+<div class="calendar">
+  <div class="calendar-header">
+    <span class="month">{monthName}</span>
+  </div>
+  <div class="weekdays">
+    <span>日</span><span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span>
+  </div>
+  <div class="days">
+    {days.map(day => (
+      day.date ? (
+        <a 
+          href={day.hasPost ? `/posts/${day.date}` : '#'}
+          class:list={[
+            'day', 
+            { 'today': day.isToday },
+            { 'has-post': day.hasPost }
+          ]}
+        >
+          {parseInt(day.date.split('-')[2])}
+        </a>
+      ) : <span class="day empty"></span>
+    ))}
+  </div>
+</div>
+
+<style>
+  .calendar {
+    background: white;
+    border-radius: 8px;
+    padding: 1rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  }
+  
+  .calendar-header {
+    text-align: center;
+    margin-bottom: 0.75rem;
+  }
+  
+  .month {
+    font-family: var(--font-hand);
+    font-size: 1.1rem;
+    color: var(--color-accent);
+  }
+  
+  .weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    text-align: center;
+    font-size: 0.75rem;
+    color: var(--color-muted);
+    margin-bottom: 0.5rem;
+  }
+  
+  .days {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 2px;
+  }
+  
+  .day {
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    border-radius: 4px;
+    text-decoration: none;
+    color: var(--color-text);
+    transition: background 0.2s;
+  }
+  
+  .day.empty {
+    background: transparent;
+  }
+  
+  .day.today {
+    background: var(--color-accent);
+    color: white;
+    font-weight: 600;
+  }
+  
+  .day.has-post:not(.today) {
+    background: #f5e6d3;
+    color: var(--color-accent);
+  }
+  
+  .day.has-post:hover:not(.today) {
+    background: #e8d4c0;
+  }
+</style>
