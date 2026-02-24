@@ -9,16 +9,13 @@ const posts = (await getCollection('posts')).sort(
 ---
 
 <Layout title="每日记录">
-  <div class="page-layout">
-    <aside class="sidebar">
-      <Calendar posts={posts} />
-    </aside>
-    <main class="content">
-      <section class="intro">
-        <h1>📝 每日记录</h1>
-        <p class="subtitle">记录日常的思考、感想与灵光一现</p>
-      </section>
+  <section class="intro">
+    <h1>📝 每日记录</h1>
+    <p class="subtitle">记录日常的思考、感想与灵光一现</p>
+  </section>
 
+  <div class="page-layout">
+    <main class="content">
       <section class="posts">
         {posts.map((post) => (
           <article class="post-card">
@@ -31,27 +28,14 @@ const posts = (await getCollection('posts')).sort(
         ))}
       </section>
     </main>
+    
+    <aside class="sidebar">
+      <Calendar posts={posts} />
+    </aside>
   </div>
 </Layout>
 
 <style>
-  .page-layout {
-    display: flex;
-    gap: 2rem;
-    align-items: flex-start;
-  }
-  
-  .sidebar {
-    flex: 0 0 220px;
-    position: sticky;
-    top: 2rem;
-  }
-  
-  .content {
-    flex: 1;
-    min-width: 0;
-  }
-  
   .intro {
     text-align: center;
     margin-bottom: 3rem;
@@ -68,6 +52,23 @@ const posts = (await getCollection('posts')).sort(
   .subtitle {
     color: var(--color-muted);
     font-size: 1rem;
+  }
+  
+  .page-layout {
+    display: flex;
+    gap: 2rem;
+    align-items: flex-start;
+  }
+  
+  .content {
+    flex: 1;
+    min-width: 0;
+  }
+  
+  .sidebar {
+    flex: 0 0 220px;
+    position: sticky;
+    top: 2rem;
   }
   
   .post-card {
@@ -110,7 +111,7 @@ const posts = (await getCollection('posts')).sort(
     font-size: 0.95rem;
   }
   
-  @media (max-width: 640px) {
+  @media (max-width: 768px) {
     .page-layout {
       flex-direction: column;
     }
@@ -119,6 +120,7 @@ const posts = (await getCollection('posts')).sort(
       flex: none;
       width: 100%;
       position: static;
+      order: -1;
     }
   }
 </style>
