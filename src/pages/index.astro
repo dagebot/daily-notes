@@ -19,7 +19,7 @@ const posts = (await getCollection('posts')).sort(
       <section class="posts">
         {posts.map((post) => (
           <article class="post-card">
-            <span class="date">{post.data.date}</span>
+            <span class="date">{post.data.date.toISOString().split('T')[0]}</span>
             <h2>
               <a href={`/posts/${post.slug}`}>{post.data.title}</a>
             </h2>

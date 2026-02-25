@@ -1,12 +1,15 @@
 ---
 interface Props {
-  posts: { slug: string; data: { date: string } }[];
+  posts: { slug: string; data: { date: Date } }[];
 }
 
 const { posts } = Astro.props;
 
-// Get all dates with posts
-const postDates = new Set(posts.map(p => p.data.date));
+// Get all dates with posts (convert to YYYY-MM-DD string)
+const postDates = new Set(posts.map(p => {
+  const d = p.data.date;
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}));
 
 // Generate calendar data for current month
 const now = new Date();

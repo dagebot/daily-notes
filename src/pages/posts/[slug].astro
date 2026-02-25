@@ -17,7 +17,7 @@ const { Content } = await post.render();
 <Layout title={`${post.data.title} | 每日记录`}>
   <article class="post">
     <header>
-      <span class="date">{post.data.date}</span>
+      <span class="date">{post.data.date.toISOString().split('T')[0]}</span>
       <h1>{post.data.title}</h1>
     </header>
     
