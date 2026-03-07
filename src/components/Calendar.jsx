@@ -56,9 +56,9 @@ export default function Calendar({ posts }) {
   return (
     <div className="calendar-container">
       <div className="calendar-header">
-        <button className="nav-btn" onClick={goToPrevMonth} aria-label="上个月">‹</button>
+        <button type="button" className="nav-btn" onClick={goToPrevMonth} aria-label="上个月">‹</button>
         <span className="month-title">{monthName}</span>
-        <button className="nav-btn" onClick={goToNextMonth} aria-label="下个月">›</button>
+        <button type="button" className="nav-btn" onClick={goToNextMonth} aria-label="下个月">›</button>
       </div>
       <div className="calendar-weekdays">
         <span>日</span><span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span>
@@ -80,7 +80,7 @@ export default function Calendar({ posts }) {
         ))}
       </div>
       <div className="calendar-footer">
-        <button className="today-btn" onClick={goToToday}>回到今天</button>
+        <button type="button" className="today-btn" onClick={goToToday}>回到今天</button>
       </div>
     </div>
   );

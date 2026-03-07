@@ -16,41 +16,66 @@ const posts = allPosts.filter(post => new Date(post.data.date) >= sevenDaysAgo);
 ---
 
 <Layout title="每日记录">
-  <div class="main-container">
-    <section class="intro">
-      <h1>📝 每日记录</h1>
-      <p class="subtitle">记录日常的思考、感想与灵光一现</p>
-    </section>
-
-    <main class="content">
-      <section class="posts">
-        <h2 class="section-title">最近七天</h2>
-        {posts.length > 0 ? (
-          posts.map((post) => (
-            <article class="post-card">
-              <span class="date">{post.data.date.toISOString().split('T')[0]}</span>
-              <h2>
-                <a href={`/posts/${post.slug}`}>{post.data.title}</a>
-              </h2>
-              <p>{post.data.excerpt}</p>
-            </article>
-          ))
-        ) : (
-          <p class="no-posts">最近七天没有日记记录</p>
-        )}
+  <div class="wrapper">
+    <aside class="sidebar-desktop">
+      <Calendar posts={allPosts} client:load />
+    </aside>
+    
+    <div class="main-container">
+      <aside class="sidebar-mobile">
+        <Calendar posts={allPosts} client:load />
+      </aside>
+      
+      <section class="intro">
+        <h1>📝 每日记录</h1>
+        <p class="subtitle">记录日常的思考、感想与灵光一现</p>
       </section>
-    </main>
+
+      <main class="content">
+        <section class="posts">
+          <h2 class="section-title">最近七天</h2>
+          {posts.length > 0 ? (
+            posts.map((post) => (
+              <article class="post-card">
+                <span class="date">{post.data.date.toISOString().split('T')[0]}</span>
+                <h2>
+                  <a href={`/posts/${post.slug}`}>{post.data.title}</a>
+                </h2>
+                <p>{post.data.excerpt}</p>
+              </article>
+            ))
+          ) : (
+            <p class="no-posts">最近七天没有日记记录</p>
+          )}
+        </section>
+      </main>
+    </div>
   </div>
-  
-  <aside class="sidebar">
-    <Calendar posts={allPosts} client:load />
-  </aside>
 </Layout>
 
 <style>
+  .wrapper {
+    position: relative;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1rem;
+  }
+  
   .main-container {
     max-width: 800px;
     margin: 0 auto;
+  }
+  
+  .sidebar-desktop {
+    position: absolute;
+    left: calc(50% + 400px + 2rem);
+    top: 100px;
+    width: 280px;
+  }
+  
+  .sidebar-mobile {
+    display: none;
+    margin-bottom: 2rem;
   }
   
   .intro {
@@ -73,13 +98,6 @@ const posts = allPosts.filter(post => new Date(post.data.date) >= sevenDaysAgo);
   
   .content {
     min-width: 0;
-  }
-  
-  .sidebar {
-    position: fixed;
-    right: 2rem;
-    top: 100px;
-    width: 280px;
   }
   
   .post-card {
@@ -141,8 +159,12 @@ const posts = allPosts.filter(post => new Date(post.data.date) >= sevenDaysAgo);
   }
   
   @media (max-width: 1200px) {
-    .sidebar {
+    .sidebar-desktop {
       display: none;
+    }
+    
+    .sidebar-mobile {
+      display: block;
     }
   }
 </style>
