@@ -22,7 +22,10 @@ const totalMonths = new Set(
 ).size;
 ---
 
-<Layout title="每日记录">
+<Layout 
+  title="每日记录"
+  description="把日常里的判断、感想与片刻灵感，整理成持续可回看的文字轨迹。"
+>
   <div class="wrapper">
     <aside class="sidebar-desktop">
       <Calendar posts={allPosts} client:load />

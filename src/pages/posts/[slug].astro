@@ -12,9 +12,16 @@ export async function getStaticPaths() {
 
 const { post } = Astro.props;
 const { Content } = await post.render();
+
+// Generate excerpt from content if not provided
+const excerpt = post.data.excerpt || post.body?.slice(0, 150).replace(/[#*\n]/g, ' ').trim() + '...' || '每日记录 - Bub 的日记';
 ---
 
-<Layout title={`${post.data.title} | 每日记录`}>
+<Layout 
+  title={`${post.data.title} | 每日记录`}
+  description={excerpt}
+  type="article"
+>
   <article class="post">
     <header>
       <span class="date">{post.data.date.toISOString().split('T')[0]}</span>

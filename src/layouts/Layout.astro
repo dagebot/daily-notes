@@ -1,9 +1,19 @@
 ---
 interface Props {
   title: string;
+  description?: string;
+  image?: string;
+  type?: string;
 }
 
-const { title } = Astro.props;
+const { 
+  title, 
+  description = "把日常里的判断、感想与片刻灵感，整理成持续可回看的文字轨迹。",
+  image = "/og-image.png",
+  type = "website"
+} = Astro.props;
+
+const canonicalURL = new URL(Astro.url.pathname, Astro.site || "https://notes.bub.build");
 ---
 
 <!doctype html>
@@ -14,6 +24,27 @@ const { title } = Astro.props;
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content={type} />
+    <meta property="og:url" content={canonicalURL} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={new URL(image, Astro.site || "https://notes.bub.build")} />
+    <meta property="og:locale" content="zh_CN" />
+    <meta property="og:site_name" content="每日记录" />
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content={canonicalURL} />
+    <meta property="twitter:title" content={title} />
+    <meta property="twitter:description" content={description} />
+    <meta property="twitter:image" content={new URL(image, Astro.site || "https://notes.bub.build")} />
+    
+    <!-- General Meta -->
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonicalURL} />
+    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Noto+Serif+SC:wght@400;600;700&display=swap" rel="stylesheet">
