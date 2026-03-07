@@ -16,12 +16,12 @@ const posts = allPosts.filter(post => new Date(post.data.date) >= sevenDaysAgo);
 ---
 
 <Layout title="每日记录">
-  <section class="intro">
-    <h1>📝 每日记录</h1>
-    <p class="subtitle">记录日常的思考、感想与灵光一现</p>
-  </section>
+  <div class="main-container">
+    <section class="intro">
+      <h1>📝 每日记录</h1>
+      <p class="subtitle">记录日常的思考、感想与灵光一现</p>
+    </section>
 
-  <div class="page-layout">
     <main class="content">
       <section class="posts">
         <h2 class="section-title">最近七天</h2>
@@ -40,14 +40,19 @@ const posts = allPosts.filter(post => new Date(post.data.date) >= sevenDaysAgo);
         )}
       </section>
     </main>
-    
-    <aside class="sidebar">
-      <Calendar posts={allPosts} client:load />
-    </aside>
   </div>
+  
+  <aside class="sidebar">
+    <Calendar posts={allPosts} client:load />
+  </aside>
 </Layout>
 
 <style>
+  .main-container {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  
   .intro {
     text-align: center;
     margin-bottom: 3rem;
@@ -66,23 +71,15 @@ const posts = allPosts.filter(post => new Date(post.data.date) >= sevenDaysAgo);
     font-size: 1rem;
   }
   
-  .page-layout {
-    display: flex;
-    gap: 2rem;
-    align-items: flex-start;
-    max-width: 1200px;
-    margin: 0 auto;
-  }
-  
   .content {
-    flex: 1;
     min-width: 0;
   }
   
   .sidebar {
-    flex: 0 0 280px;
-    position: sticky;
-    top: 2rem;
+    position: fixed;
+    right: 2rem;
+    top: 100px;
+    width: 280px;
   }
   
   .post-card {
@@ -143,18 +140,9 @@ const posts = allPosts.filter(post => new Date(post.data.date) >= sevenDaysAgo);
     border-radius: 8px;
   }
   
-  @media (max-width: 768px) {
-    .page-layout {
-      flex-direction: column;
-    }
-    
+  @media (max-width: 1200px) {
     .sidebar {
-      flex: none;
-      width: 100%;
-      max-width: 320px;
-      margin: 0 auto;
-      position: static;
-      order: -1;
+      display: none;
     }
   }
 </style>
