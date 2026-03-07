@@ -30,7 +30,7 @@ const posts = (await getCollection('posts')).sort(
     </main>
     
     <aside class="sidebar">
-      <Calendar posts={posts} />
+      <Calendar posts={posts} client:load />
     </aside>
   </div>
 </Layout>
