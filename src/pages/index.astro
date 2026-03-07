@@ -13,6 +13,13 @@ sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
 sevenDaysAgo.setHours(0, 0, 0, 0);
 
 const posts = allPosts.filter(post => new Date(post.data.date) >= sevenDaysAgo);
+const latestPost = allPosts[0];
+const totalMonths = new Set(
+  allPosts.map(post => {
+    const date = new Date(post.data.date);
+    return `${date.getFullYear()}-${date.getMonth() + 1}`;
+  })
+).size;
 ---
 
 <Layout title="每日记录">
@@ -22,18 +29,36 @@ const posts = allPosts.filter(post => new Date(post.data.date) >= sevenDaysAgo);
     </aside>
     
     <div class="main-container">
+      <section class="intro">
+        <span class="eyebrow">Personal journal archive</span>
+        <h1>每日记录</h1>
+        <p class="subtitle">把日常里的判断、感想与片刻灵感，整理成持续可回看的文字轨迹。</p>
+        <div class="intro-meta">
+          <div class="meta-card">
+            <span class="meta-label">Latest Entry</span>
+            <strong>{latestPost?.data.date.toISOString().split('T')[0] ?? 'N/A'}</strong>
+          </div>
+          <div class="meta-card">
+            <span class="meta-label">Entries</span>
+            <strong>{allPosts.length}</strong>
+          </div>
+          <div class="meta-card">
+            <span class="meta-label">Active Months</span>
+            <strong>{totalMonths}</strong>
+          </div>
+        </div>
+      </section>
+
       <aside class="sidebar-mobile">
         <Calendar posts={allPosts} client:load />
       </aside>
-      
-      <section class="intro">
-        <h1>📝 每日记录</h1>
-        <p class="subtitle">记录日常的思考、感想与灵光一现</p>
-      </section>
 
       <main class="content">
         <section class="posts">
-          <h2 class="section-title">最近七天</h2>
+          <div class="section-heading">
+            <h2 class="section-title">最近七天</h2>
+            <p class="section-caption">最新记录会优先出现在这里，便于快速回看最近一周的更新。</p>
+          </div>
           {posts.length > 0 ? (
             posts.map((post) => (
               <article class="post-card">
@@ -75,57 +100,145 @@ const posts = allPosts.filter(post => new Date(post.data.date) >= sevenDaysAgo);
   
   .sidebar-mobile {
     display: none;
-    margin-bottom: 2rem;
-    max-width: 320px;
-    margin-left: auto;
-    margin-right: auto;
+    margin: 0 auto 2rem;
+    max-width: 360px;
   }
   
   .intro {
+    position: relative;
+    overflow: hidden;
     text-align: center;
     margin-bottom: 3rem;
-    padding: 2rem 0;
-    border-bottom: 1px solid var(--color-border);
+    padding: 3.2rem 2rem 2.4rem;
+    border: 1px solid var(--color-border);
+    border-radius: 32px;
+    background:
+      radial-gradient(circle at top right, rgba(143, 61, 34, 0.12), transparent 24%),
+      radial-gradient(circle at left bottom, rgba(129, 168, 170, 0.12), transparent 22%),
+      linear-gradient(180deg, rgba(255, 253, 248, 0.94), rgba(252, 247, 239, 0.92));
+    box-shadow: var(--shadow-soft);
+  }
+
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.45rem 0.8rem;
+    border-radius: 999px;
+    background: rgba(143, 61, 34, 0.08);
+    border: 1px solid rgba(143, 61, 34, 0.08);
+    color: var(--color-accent);
+    font-family: var(--font-sans);
+    font-size: 0.78rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    font-weight: 700;
   }
   
   .intro h1 {
-    font-family: var(--font-hand);
-    font-size: 2.5rem;
-    margin-bottom: 0.5rem;
+    color: var(--color-text);
+    font-size: clamp(2.8rem, 7vw, 4.8rem);
+    line-height: 1.05;
+    margin: 1rem 0 0.85rem;
+    letter-spacing: -0.04em;
   }
   
   .subtitle {
+    max-width: 38rem;
+    margin: 0 auto;
     color: var(--color-muted);
-    font-size: 1rem;
+    font-size: 1.05rem;
+    line-height: 1.9;
+  }
+
+  .intro-meta {
+    margin-top: 1.75rem;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.9rem;
+  }
+
+  .meta-card {
+    text-align: left;
+    padding: 1rem 1.1rem;
+    border-radius: 22px;
+    background: rgba(255, 253, 249, 0.78);
+    border: 1px solid var(--color-border);
+    box-shadow: 0 10px 24px rgba(71, 41, 23, 0.05);
+  }
+
+  .meta-label {
+    display: block;
+    margin-bottom: 0.35rem;
+    color: var(--color-muted);
+    font-family: var(--font-sans);
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-weight: 700;
+  }
+
+  .meta-card strong {
+    color: var(--color-text);
+    font-family: var(--font-sans);
+    font-size: 1.05rem;
+    font-weight: 800;
   }
   
   .content {
     min-width: 0;
   }
+
+  .posts {
+    padding: 1.4rem;
+    border: 1px solid var(--color-border);
+    border-radius: 28px;
+    background: rgba(255, 252, 247, 0.68);
+    box-shadow: var(--shadow-soft);
+    backdrop-filter: blur(12px);
+  }
+
+  .section-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: end;
+    gap: 1rem;
+    margin-bottom: 1.4rem;
+  }
   
   .post-card {
-    padding: 1.5rem;
-    margin-bottom: 1.5rem;
-    background: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-    transition: transform 0.2s, box-shadow 0.2s;
+    padding: 1.4rem 1.5rem;
+    margin-bottom: 1rem;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(252, 248, 242, 0.96));
+    border-radius: 24px;
+    border: 1px solid var(--color-border);
+    box-shadow: 0 12px 30px rgba(60, 34, 19, 0.05);
+    transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
   }
   
   .post-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+    transform: translateY(-3px);
+    box-shadow: 0 20px 36px rgba(60, 34, 19, 0.08);
+    border-color: var(--color-border-strong);
   }
   
   .date {
-    font-size: 0.8rem;
+    display: inline-flex;
+    align-items: center;
+    padding: 0.3rem 0.6rem;
+    border-radius: 999px;
+    background: rgba(143, 61, 34, 0.08);
+    border: 1px solid rgba(143, 61, 34, 0.08);
+    font-size: 0.76rem;
     color: var(--color-muted);
-    font-family: var(--font-hand);
+    font-family: var(--font-sans);
+    font-weight: 700;
+    letter-spacing: 0.04em;
   }
   
   .post-card h2 {
-    margin: 0.5rem 0 0.75rem;
-    font-size: 1.3rem;
+    margin: 0.9rem 0 0.75rem;
+    font-size: 1.45rem;
+    line-height: 1.35;
   }
   
   .post-card h2 a {
@@ -139,17 +252,24 @@ const posts = allPosts.filter(post => new Date(post.data.date) >= sevenDaysAgo);
   
   .post-card p {
     color: var(--color-muted);
-    line-height: 1.7;
+    line-height: 1.85;
     font-size: 0.95rem;
   }
   
   .section-title {
-    font-family: var(--font-hand);
-    font-size: 1.5rem;
+    font-family: var(--font-sans);
+    font-size: 1.2rem;
     color: var(--color-accent);
-    margin-bottom: 1.5rem;
-    padding-bottom: 0.5rem;
-    border-bottom: 1px solid var(--color-border);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-weight: 800;
+  }
+
+  .section-caption {
+    max-width: 22rem;
+    color: var(--color-muted);
+    font-size: 0.92rem;
+    text-align: right;
   }
   
   .no-posts {
@@ -157,8 +277,9 @@ const posts = allPosts.filter(post => new Date(post.data.date) >= sevenDaysAgo);
     font-style: italic;
     padding: 2rem;
     text-align: center;
-    background: white;
-    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.92);
+    border-radius: 24px;
+    border: 1px solid var(--color-border);
   }
   
   @media (max-width: 1200px) {
@@ -168,6 +289,58 @@ const posts = allPosts.filter(post => new Date(post.data.date) >= sevenDaysAgo);
     
     .sidebar-mobile {
       display: block;
+    }
+  }
+
+  @media (max-width: 720px) {
+    .wrapper {
+      padding: 0;
+    }
+
+    .intro {
+      padding: 2.3rem 1.2rem 1.4rem;
+      margin-bottom: 1.5rem;
+      border-radius: 28px;
+    }
+
+    .subtitle {
+      font-size: 0.98rem;
+    }
+
+    .intro-meta {
+      grid-template-columns: 1fr;
+      gap: 0.75rem;
+    }
+
+    .sidebar-mobile {
+      max-width: none;
+      margin-bottom: 1.5rem;
+    }
+
+    .posts {
+      padding: 1rem;
+      border-radius: 24px;
+    }
+
+    .section-heading {
+      flex-direction: column;
+      align-items: start;
+      margin-bottom: 1rem;
+    }
+
+    .section-caption {
+      max-width: none;
+      text-align: left;
+      font-size: 0.88rem;
+    }
+
+    .post-card {
+      padding: 1.1rem;
+      border-radius: 20px;
+    }
+
+    .post-card h2 {
+      font-size: 1.24rem;
     }
   }
 </style>

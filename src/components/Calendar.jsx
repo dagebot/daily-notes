@@ -1,7 +1,19 @@
 import { useState, useMemo } from 'react';
 
 export default function Calendar({ posts }) {
-  const [currentDate, setCurrentDate] = useState(new Date());
+  const availableMonths = useMemo(() => {
+    const months = Array.from(new Set(
+      posts.map(post => {
+        const date = new Date(post.data.date);
+        return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+      })
+    ));
+
+    return months.sort((a, b) => a.localeCompare(b));
+  }, [posts]);
+
+  const latestMonth = availableMonths[availableMonths.length - 1];
+  const [currentMonthKey, setCurrentMonthKey] = useState(() => latestMonth ?? null);
   
   const postMap = useMemo(() => {
     const map = new Map();
@@ -13,24 +25,26 @@ export default function Calendar({ posts }) {
     return map;
   }, [posts]);
 
-  const year = currentDate.getFullYear();
-  const month = currentDate.getMonth();
+  const currentMonthIndex = currentMonthKey ? availableMonths.indexOf(currentMonthKey) : -1;
+  const [year, month] = currentMonthKey
+    ? currentMonthKey.split('-').map(Number)
+    : [new Date().getFullYear(), new Date().getMonth() + 1];
   const today = new Date();
 
-  const firstDay = new Date(year, month, 1);
-  const lastDay = new Date(year, month + 1, 0);
+  const firstDay = new Date(year, month - 1, 1);
+  const lastDay = new Date(year, month, 0);
   const startPadding = firstDay.getDay();
   const daysInMonth = lastDay.getDate();
 
-  const monthName = `${year}年${month + 1}月`;
+  const monthName = `${year}年${month}月`;
 
   const days = [];
   for (let i = 0; i < startPadding; i++) {
     days.push(null);
   }
   for (let d = 1; d <= daysInMonth; d++) {
-    const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
-    const isToday = d === today.getDate() && month === today.getMonth() && year === today.getFullYear();
+    const dateStr = `${year}-${String(month).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+    const isToday = d === today.getDate() && month - 1 === today.getMonth() && year === today.getFullYear();
     const post = postMap.get(dateStr);
     days.push({
       date: dateStr,
@@ -42,23 +56,40 @@ export default function Calendar({ posts }) {
   }
 
   const goToPrevMonth = () => {
-    setCurrentDate(new Date(year, month - 1, 1));
+    if (currentMonthIndex > 0) {
+      setCurrentMonthKey(availableMonths[currentMonthIndex - 1]);
+    }
   };
 
   const goToNextMonth = () => {
-    setCurrentDate(new Date(year, month + 1, 1));
+    if (currentMonthIndex >= 0 && currentMonthIndex < availableMonths.length - 1) {
+      setCurrentMonthKey(availableMonths[currentMonthIndex + 1]);
+    }
   };
 
   const goToToday = () => {
-    setCurrentDate(new Date());
+    if (latestMonth) {
+      setCurrentMonthKey(latestMonth);
+    }
   };
+
+  const hasPrevMonth = currentMonthIndex > 0;
+  const hasNextMonth = currentMonthIndex >= 0 && currentMonthIndex < availableMonths.length - 1;
 
   return (
     <div className="calendar-container">
       <div className="calendar-header">
-        <button type="button" className="nav-btn" onClick={goToPrevMonth} aria-label="上个月">‹</button>
+        {hasPrevMonth ? (
+          <button type="button" className="nav-btn" onClick={goToPrevMonth} aria-label="上个月">‹</button>
+        ) : (
+          <span className="nav-btn nav-btn-placeholder" aria-hidden="true"></span>
+        )}
         <span className="month-title">{monthName}</span>
-        <button type="button" className="nav-btn" onClick={goToNextMonth} aria-label="下个月">›</button>
+        {hasNextMonth ? (
+          <button type="button" className="nav-btn" onClick={goToNextMonth} aria-label="下个月">›</button>
+        ) : (
+          <span className="nav-btn nav-btn-placeholder" aria-hidden="true"></span>
+        )}
       </div>
       <div className="calendar-weekdays">
         <span>日</span><span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span>
