@@ -18,12 +18,12 @@ const posts = allPosts.filter(post => new Date(post.data.date) >= sevenDaysAgo);
 <Layout title="每日记录">
   <div class="wrapper">
     <aside class="sidebar-desktop">
-      <Calendar posts={allPosts} client:load />
+      <Calendar posts={allPosts} client:only="react" />
     </aside>
     
     <div class="main-container">
       <aside class="sidebar-mobile">
-        <Calendar posts={allPosts} client:load />
+        <Calendar posts={allPosts} client:only="react" />
       </aside>
       
       <section class="intro">
@@ -76,6 +76,9 @@ const posts = allPosts.filter(post => new Date(post.data.date) >= sevenDaysAgo);
   .sidebar-mobile {
     display: none;
     margin-bottom: 2rem;
+    max-width: 320px;
+    margin-left: auto;
+    margin-right: auto;
   }
   
   .intro {
