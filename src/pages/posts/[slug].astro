@@ -97,7 +97,8 @@ const excerpt = post.data.excerpt || post.body?.slice(0, 150).replace(/[#*\n]/g,
 
   .content :global(ul),
   .content :global(ol) {
-    margin: 0 0 1.5rem 1.4rem;
+    margin: 0 0 1.5rem 0.4rem;
+    list-style-position: inside;
   }
 
   .content :global(li) {
@@ -107,6 +108,7 @@ const excerpt = post.data.excerpt || post.body?.slice(0, 150).replace(/[#*\n]/g,
   .content :global(ol li::marker) {
     font-size: 0.85em;
     color: var(--color-muted);
+    padding-right: 0.5rem;
   }
 
   .content :global(li + li) {
