@@ -14,6 +14,7 @@ const {
 } = Astro.props;
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site || "https://notes.bub.build");
+const pathname = Astro.url.pathname;
 ---
 
 <!doctype html>
@@ -45,24 +46,21 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site || "https://notes.bu
     <meta name="description" content={description} />
     <link rel="canonical" href={canonicalURL} />
     
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Noto+Serif+SC:wght@400;600;700&display=swap" rel="stylesheet">
   </head>
   <body>
-    <header>
-      <nav>
+    <header class="site-header">
+      <nav aria-label="主导航">
         <a href="/" class="logo">Bub's Daily Notes</a>
         <div class="nav-links">
-          <a href="/">首页</a>
-          <a href="/about">关于</a>
+          <a href="/" aria-current={pathname === '/' ? 'page' : undefined}>首页</a>
+          <a href="/about" aria-current={pathname === '/about' ? 'page' : undefined}>关于</a>
         </div>
       </nav>
     </header>
     <main>
       <slot />
     </main>
-    <footer>
+    <footer class="site-footer">
       <p>© 2026 Bub · 用心记录每一天</p>
     </footer>
   </body>
@@ -70,19 +68,21 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site || "https://notes.bu
 
 <style is:global>
   :root {
-    --color-bg: #f5f1ea;
-    --color-surface: rgba(255, 252, 247, 0.8);
-    --color-panel: #fffdf9;
-    --color-text: #241f1a;
+    color-scheme: light;
+    --color-bg: #f1eee7;
+    --color-surface: #faf8f3;
+    --color-panel: #fffefa;
+    --color-text: #24231f;
     --color-accent: #8f3d22;
     --color-accent-strong: #6d2b16;
-    --color-muted: #6d655d;
-    --color-border: rgba(109, 82, 60, 0.14);
-    --color-border-strong: rgba(109, 82, 60, 0.24);
-    --shadow-soft: 0 24px 60px rgba(60, 34, 19, 0.08);
-    --shadow-card: 0 16px 40px rgba(70, 40, 24, 0.08);
-    --font-serif: 'Noto Serif SC', 'Songti SC', serif;
-    --font-sans: 'Manrope', 'PingFang SC', 'Helvetica Neue', sans-serif;
+    --color-muted: #66625b;
+    --color-border: #d8d2c7;
+    --color-border-strong: #aaa196;
+    --color-quiet: #ebe6dd;
+    --radius: 8px;
+    --font-serif: 'Source Han Serif SC', 'Noto Serif CJK SC', 'Songti SC', STSong, SimSun, serif;
+    --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+    --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   }
   
   * {
@@ -92,93 +92,93 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site || "https://notes.bu
   }
   
   html {
-    font-family: var(--font-serif);
     background: var(--color-bg);
     color: var(--color-text);
-    line-height: 1.8;
+    font-family: var(--font-sans);
+    line-height: 1.65;
+    text-rendering: optimizeLegibility;
   }
   
   body {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
-    background:
-      radial-gradient(circle at top left, rgba(201, 126, 79, 0.18), transparent 30%),
-      radial-gradient(circle at top right, rgba(152, 177, 179, 0.14), transparent 26%),
-      linear-gradient(180deg, #fcf8f1 0%, #f4eee7 55%, #f8f4ee 100%);
+    background: var(--color-bg);
   }
-  
-  header {
-    padding: 1.5rem 2rem 0;
+
+  ::selection {
+    background: #ead8cf;
   }
-  
-  nav {
+
+  .site-header {
+    padding: 0 2rem;
+    background: var(--color-surface);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .site-header nav {
     max-width: 1120px;
     margin: 0 auto;
+    min-height: 4.5rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 1rem 1.25rem;
-    border: 1px solid var(--color-border);
-    border-radius: 999px;
-    background: rgba(255, 250, 244, 0.72);
-    backdrop-filter: blur(14px);
-    box-shadow: 0 12px 30px rgba(78, 48, 27, 0.06);
+    gap: 2rem;
   }
-  
+
   .logo {
-    font-family: var(--font-sans);
-    font-size: 1rem;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
     color: var(--color-accent);
     text-decoration: none;
-    font-weight: 800;
+    font-size: 0.96rem;
+    font-weight: 750;
+    letter-spacing: 0.035em;
+    white-space: nowrap;
   }
 
   .nav-links {
     display: flex;
     align-items: center;
-    gap: 0.75rem;
+    gap: 0.25rem;
   }
-  
-  nav a:not(.logo) {
+
+  .site-header nav a:not(.logo) {
     color: var(--color-muted);
     text-decoration: none;
-    transition: color 0.2s, background-color 0.2s, border-color 0.2s;
-    padding: 0.55rem 0.9rem;
-    border-radius: 999px;
-    border: 1px solid transparent;
-    font-family: var(--font-sans);
-    font-size: 0.92rem;
+    min-height: 2.75rem;
+    display: inline-flex;
+    align-items: center;
+    padding: 0 0.75rem;
+    border-bottom: 2px solid transparent;
+    font-size: 0.9rem;
     font-weight: 600;
+    transition: color 160ms ease, border-color 160ms ease;
   }
-  
-  nav a:not(.logo):hover {
+
+  .site-header nav a:not(.logo):hover,
+  .site-header nav a:not(.logo)[aria-current='page'] {
     color: var(--color-accent);
-    background: rgba(143, 61, 34, 0.08);
-    border-color: rgba(143, 61, 34, 0.12);
+    border-bottom-color: var(--color-accent);
   }
-  
+
   main {
     flex: 1;
     width: 100%;
-    padding: 3rem 2rem 4rem;
+    padding: 4rem 2rem 5rem;
   }
-  
-  footer {
+
+  .site-footer {
     text-align: center;
-    padding: 2rem;
+    padding: 1.5rem 2rem;
     color: var(--color-muted);
-    font-size: 0.875rem;
+    background: var(--color-surface);
+    font-size: 0.82rem;
     border-top: 1px solid var(--color-border);
   }
-  
+
   h1, h2, h3 {
-    color: var(--color-accent);
-    font-weight: 600;
+    color: var(--color-text);
   }
-  
+
   a {
     color: var(--color-accent);
   }
@@ -189,21 +189,17 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site || "https://notes.bu
 
   a:focus-visible,
   button:focus-visible {
-    outline: 2px solid rgba(143, 61, 34, 0.7);
+    outline: 2px solid var(--color-accent);
     outline-offset: 3px;
   }
-  
-  /* Calendar Styles */
+
   .calendar-container {
-    background: linear-gradient(180deg, rgba(255, 253, 249, 0.95), rgba(250, 244, 235, 0.92));
-    border-radius: 24px;
-    padding: 1.1rem;
-    box-shadow: var(--shadow-card);
+    background: var(--color-panel);
+    border-radius: var(--radius);
+    padding: 1rem;
     border: 1px solid var(--color-border);
-    font-family: var(--font-serif);
-    backdrop-filter: blur(12px);
   }
-  
+
   .calendar-header {
     display: flex;
     justify-content: space-between;
@@ -212,34 +208,32 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site || "https://notes.bu
     padding-bottom: 0.85rem;
     border-bottom: 1px solid var(--color-border);
   }
-  
+
   .month-title {
-    font-family: var(--font-sans);
-    font-size: 0.95rem;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--color-accent);
-    font-weight: 800;
+    color: var(--color-text);
+    font-size: 0.9rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
   }
-  
+
   .nav-btn {
-    background: rgba(255, 255, 255, 0.78);
+    background: transparent;
     border: 1px solid var(--color-border);
-    min-width: 2.5rem;
-    min-height: 2.5rem;
+    width: 2.5rem;
+    height: 2.5rem;
     font-size: 1.1rem;
     color: var(--color-muted);
     cursor: pointer;
     padding: 0.25rem;
-    border-radius: 999px;
-    transition: all 0.2s;
+    border-radius: 4px;
+    transition: color 160ms ease, background-color 160ms ease, border-color 160ms ease;
     line-height: 1;
   }
-  
+
   .nav-btn:hover {
-    background: rgba(143, 61, 34, 0.08);
+    background: var(--color-quiet);
     color: var(--color-accent);
-    border-color: rgba(143, 61, 34, 0.2);
+    border-color: var(--color-border-strong);
   }
 
   .nav-btn-placeholder {
@@ -257,13 +251,11 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site || "https://notes.bu
   .calendar-weekdays span {
     text-align: center;
     font-size: 0.72rem;
-    font-family: var(--font-sans);
-    font-weight: 700;
-    letter-spacing: 0.04em;
+    font-weight: 600;
     color: var(--color-muted);
     padding: 0.35rem 0;
   }
-  
+
   .calendar-days {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
@@ -278,62 +270,56 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site || "https://notes.bu
     font-size: 0.85rem;
     text-decoration: none;
     color: var(--color-text);
-    border-radius: 14px;
-    transition: all 0.2s;
+    border-radius: 3px;
+    transition: color 160ms ease, background-color 160ms ease, border-color 160ms ease;
     cursor: default;
     border: 1px solid transparent;
+    font-variant-numeric: tabular-nums;
   }
-  
-  .calendar-day:hover:not(.empty) {
-    background: rgba(143, 61, 34, 0.08);
-  }
-  
+
   .calendar-day.has-post {
-    background: linear-gradient(180deg, rgba(247, 227, 210, 0.95), rgba(243, 217, 196, 0.95));
     color: var(--color-accent);
-    font-weight: 600;
+    background: var(--color-quiet);
+    font-weight: 700;
     cursor: pointer;
-    border-color: rgba(143, 61, 34, 0.12);
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.45);
   }
-  
+
   .calendar-day.has-post:hover {
     background: var(--color-accent);
     color: white;
   }
-  
+
   .calendar-day.today {
     border-color: var(--color-accent);
   }
-  
+
   .calendar-day.empty {
     pointer-events: none;
   }
-  
+
   .calendar-footer {
     margin-top: 0.75rem;
     padding-top: 0.75rem;
     border-top: 1px solid var(--color-border);
     text-align: center;
   }
-  
+
   .today-btn {
-    background: rgba(255, 255, 255, 0.74);
+    background: transparent;
     border: 1px solid var(--color-border);
     font-size: 0.8rem;
     color: var(--color-muted);
     cursor: pointer;
-    padding: 0.55rem 0.95rem;
-    border-radius: 999px;
-    transition: all 0.2s;
-    font-family: var(--font-sans);
-    font-weight: 700;
+    padding: 0.5rem 0.75rem;
+    border-radius: 4px;
+    transition: color 160ms ease, background-color 160ms ease, border-color 160ms ease;
+    font-weight: 600;
   }
-  
+
   .today-btn:hover {
-    background: rgba(143, 61, 34, 0.08);
+    background: var(--color-quiet);
     color: var(--color-accent);
-    border-color: rgba(143, 61, 34, 0.16);
+    border-color: var(--color-border-strong);
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -344,31 +330,30 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site || "https://notes.bu
   }
 
   @media (max-width: 720px) {
-    header {
-      padding: 1rem 1rem 0;
+    .site-header {
+      padding: 0 1rem;
     }
 
-    nav {
-      border-radius: 24px;
-      padding: 0.85rem 1rem;
+    .site-header nav {
+      min-height: 4rem;
+      gap: 0.75rem;
     }
 
     .logo {
-      font-size: 0.92rem;
-      letter-spacing: 0.08em;
+      font-size: 0.88rem;
     }
 
     .nav-links {
       gap: 0.4rem;
     }
 
-    nav a:not(.logo) {
-      padding: 0.5rem 0.75rem;
-      font-size: 0.88rem;
+    .site-header nav a:not(.logo) {
+      padding: 0 0.55rem;
+      font-size: 0.84rem;
     }
 
     main {
-      padding: 2rem 1rem 3rem;
+      padding: 2.5rem 1rem 3.5rem;
     }
   }
 </style>

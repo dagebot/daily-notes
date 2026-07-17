@@ -67,7 +67,7 @@ export default function Calendar({ posts }) {
     }
   };
 
-  const goToToday = () => {
+  const goToLatestMonth = () => {
     if (latestMonth) {
       setCurrentMonthKey(latestMonth);
     }
@@ -75,6 +75,7 @@ export default function Calendar({ posts }) {
 
   const hasPrevMonth = currentMonthIndex > 0;
   const hasNextMonth = currentMonthIndex >= 0 && currentMonthIndex < availableMonths.length - 1;
+  const isLatestMonth = currentMonthKey === latestMonth;
 
   return (
     <div className="calendar-container">
@@ -97,22 +98,33 @@ export default function Calendar({ posts }) {
       <div className="calendar-days">
         {days.map((day, index) => (
           day ? (
-            <a 
-              key={day.date}
-              href={day.postSlug ? `/posts/${day.postSlug}` : '#'}
-              className={`calendar-day ${day.isToday ? 'today' : ''} ${day.hasPost ? 'has-post' : ''}`}
-              onClick={e => !day.hasPost && e.preventDefault()}
-            >
-              {day.day}
-            </a>
+            day.hasPost ? (
+              <a
+                key={day.date}
+                href={`/posts/${day.postSlug}`}
+                className={`calendar-day has-post ${day.isToday ? 'today' : ''}`}
+                aria-label={`${day.date} 的日记`}
+              >
+                {day.day}
+              </a>
+            ) : (
+              <span
+                key={day.date}
+                className={`calendar-day ${day.isToday ? 'today' : ''}`}
+              >
+                {day.day}
+              </span>
+            )
           ) : (
             <span key={`empty-${index}`} className="calendar-day empty"></span>
           )
         ))}
       </div>
-      <div className="calendar-footer">
-        <button type="button" className="today-btn" onClick={goToToday}>回到今天</button>
-      </div>
+      {!isLatestMonth && (
+        <div className="calendar-footer">
+          <button type="button" className="today-btn" onClick={goToLatestMonth}>最新月份</button>
+        </div>
+      )}
     </div>
   );
 }

@@ -31,45 +31,64 @@ import Layout from '../layouts/Layout.astro';
 
 <style>
   .about {
-    max-width: 640px;
+    max-width: 44rem;
     margin: 0 auto;
   }
-  
+
   h1 {
-    font-family: var(--font-hand);
-    font-size: 2rem;
-    margin-bottom: 2rem;
-    text-align: center;
+    margin: 0 0 2.5rem;
+    padding-bottom: 1.25rem;
+    border-bottom: 1px solid var(--color-border-strong);
+    font-family: var(--font-serif);
+    font-size: clamp(2.6rem, 8vw, 4rem);
+    font-weight: 700;
+    line-height: 1.15;
+    letter-spacing: -0.04em;
   }
-  
+
   .content {
-    font-size: 1.1rem;
+    color: var(--color-text);
+    font-family: var(--font-serif);
+    font-size: 1.08rem;
     line-height: 2;
   }
-  
+
   .content p {
-    margin-bottom: 1.5rem;
+    margin-bottom: 1.35rem;
   }
-  
+
   .signature {
-    font-family: var(--font-hand);
+    margin-top: 2.5rem;
     color: var(--color-muted);
-    margin-top: 2rem;
+    text-align: right;
   }
-  
+
   .back-link {
-    margin-top: 3rem;
-    padding-top: 2rem;
+    margin-top: 3.5rem;
+    padding-top: 1.25rem;
     border-top: 1px solid var(--color-border);
   }
-  
+
   .back-link a {
-    text-decoration: none;
     color: var(--color-muted);
-    transition: color 0.2s;
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: color 160ms ease;
   }
-  
+
   .back-link a:hover {
     color: var(--color-accent);
+  }
+
+  @media (max-width: 600px) {
+    h1 {
+      margin-bottom: 2rem;
+    }
+
+    .content {
+      font-size: 1rem;
+      line-height: 1.9;
+    }
   }
 </style>

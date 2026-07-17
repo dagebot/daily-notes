@@ -4,10 +4,10 @@ import Layout from '../layouts/Layout.astro';
 import Calendar from '../components/Calendar.jsx';
 
 const allPosts = (await getCollection('posts')).sort(
-	(a, b) => new Date(b.data.date).valueOf() - new Date(a.data.date).valueOf()
+  (a, b) => new Date(b.data.date).valueOf() - new Date(a.data.date).valueOf()
 );
 
-// 只显示最近7天的文章
+// Keep the home page focused on the most recent week.
 const sevenDaysAgo = new Date();
 sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
 sevenDaysAgo.setHours(0, 0, 0, 0);
@@ -20,330 +20,298 @@ const totalMonths = new Set(
     return `${date.getFullYear()}-${date.getMonth() + 1}`;
   })
 ).size;
+const latestDate = latestPost?.data.date.toISOString().split('T')[0] ?? '暂无';
 ---
 
-<Layout 
+<Layout
   title="每日记录"
   description="把日常里的判断、感想与片刻灵感，整理成持续可回看的文字轨迹。"
 >
-  <div class="wrapper">
-    <aside class="sidebar-desktop">
+  <div class="archive-grid">
+    <section class="intro" aria-labelledby="page-title">
+      <h1 id="page-title">每日记录</h1>
+      <p class="subtitle">把日常里的判断、感想与片刻灵感，整理成持续可回看的文字轨迹。</p>
+
+      <dl class="archive-meta">
+        <div>
+          <dt>最近更新</dt>
+          <dd><time datetime={latestPost ? latestDate : undefined}>{latestDate}</time></dd>
+        </div>
+        <div>
+          <dt>记录</dt>
+          <dd>{allPosts.length} 篇</dd>
+        </div>
+        <div>
+          <dt>时间跨度</dt>
+          <dd>{totalMonths} 个月</dd>
+        </div>
+      </dl>
+    </section>
+
+    <aside class="archive-sidebar" aria-label="按日期浏览">
+      <p class="sidebar-title">按日期浏览</p>
       <Calendar posts={allPosts} client:load />
     </aside>
-    
-    <div class="main-container">
-      <section class="intro">
-        <span class="eyebrow">Personal journal archive</span>
-        <h1>每日记录</h1>
-        <p class="subtitle">把日常里的判断、感想与片刻灵感，整理成持续可回看的文字轨迹。</p>
-        <div class="intro-meta">
-          <div class="meta-card">
-            <span class="meta-label">Latest Entry</span>
-            <strong>{latestPost?.data.date.toISOString().split('T')[0] ?? 'N/A'}</strong>
-          </div>
-          <div class="meta-card">
-            <span class="meta-label">Entries</span>
-            <strong>{allPosts.length}</strong>
-          </div>
-          <div class="meta-card">
-            <span class="meta-label">Active Months</span>
-            <strong>{totalMonths}</strong>
-          </div>
-        </div>
-      </section>
 
-      <aside class="sidebar-mobile">
-        <Calendar posts={allPosts} client:load />
-      </aside>
+    <section class="posts" aria-labelledby="recent-title">
+      <div class="section-heading">
+        <h2 id="recent-title">最近七天</h2>
+        <p>按更新时间倒序排列。</p>
+      </div>
 
-      <main class="content">
-        <section class="posts">
-          <div class="section-heading">
-            <h2 class="section-title">最近七天</h2>
-            <p class="section-caption">最新记录会优先出现在这里，便于快速回看最近一周的更新。</p>
-          </div>
-          {posts.length > 0 ? (
-            posts.map((post) => (
-              <article class="post-card">
-                <span class="date">{post.data.date.toISOString().split('T')[0]}</span>
-                <h2>
-                  <a href={`/posts/${post.slug}`}>{post.data.title}</a>
-                </h2>
-                <p>{post.data.excerpt}</p>
+      {posts.length > 0 ? (
+        <div class="post-list">
+          {posts.map((post) => {
+            const postDate = post.data.date.toISOString().split('T')[0];
+            return (
+              <article class="post-row">
+                <time class="date" datetime={postDate}>{postDate}</time>
+                <div class="post-summary">
+                  <h3>
+                    <a href={`/posts/${post.slug}`}>{post.data.title}</a>
+                  </h3>
+                  <p>{post.data.excerpt}</p>
+                </div>
               </article>
-            ))
-          ) : (
-            <p class="no-posts">最近七天没有日记记录</p>
-          )}
-        </section>
-      </main>
-    </div>
+            );
+          })}
+        </div>
+      ) : (
+        <p class="no-posts">最近七天没有日记记录。</p>
+      )}
+    </section>
   </div>
 </Layout>
 
 <style>
-  .wrapper {
-    position: relative;
-    max-width: 1200px;
+  .archive-grid {
+    max-width: 1120px;
     margin: 0 auto;
-    padding: 0 1rem;
-  }
-  
-  .main-container {
-    max-width: 800px;
-    margin: 0 auto;
-  }
-  
-  .sidebar-desktop {
-    position: absolute;
-    left: calc(50% + 400px + 2rem);
-    top: 100px;
-    width: 280px;
-  }
-  
-  .sidebar-mobile {
-    display: none;
-    margin: 0 auto 2rem;
-    max-width: 360px;
-  }
-  
-  .intro {
-    position: relative;
-    overflow: hidden;
-    text-align: center;
-    margin-bottom: 3rem;
-    padding: 3.2rem 2rem 2.4rem;
-    border: 1px solid var(--color-border);
-    border-radius: 32px;
-    background:
-      radial-gradient(circle at top right, rgba(143, 61, 34, 0.12), transparent 24%),
-      radial-gradient(circle at left bottom, rgba(129, 168, 170, 0.12), transparent 22%),
-      linear-gradient(180deg, rgba(255, 253, 248, 0.94), rgba(252, 247, 239, 0.92));
-    box-shadow: var(--shadow-soft);
-  }
-
-  .eyebrow {
-    display: inline-flex;
-    align-items: center;
-    padding: 0.45rem 0.8rem;
-    border-radius: 999px;
-    background: rgba(143, 61, 34, 0.08);
-    border: 1px solid rgba(143, 61, 34, 0.08);
-    color: var(--color-accent);
-    font-family: var(--font-sans);
-    font-size: 0.78rem;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    font-weight: 700;
-  }
-  
-  .intro h1 {
-    color: var(--color-text);
-    font-size: clamp(2.8rem, 7vw, 4.8rem);
-    line-height: 1.05;
-    margin: 1rem 0 0.85rem;
-    letter-spacing: -0.04em;
-  }
-  
-  .subtitle {
-    max-width: 38rem;
-    margin: 0 auto;
-    color: var(--color-muted);
-    font-size: 1.05rem;
-    line-height: 1.9;
-  }
-
-  .intro-meta {
-    margin-top: 1.75rem;
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 0.9rem;
+    grid-template-columns: minmax(0, 1fr) 17.5rem;
+    grid-template-areas:
+      'intro sidebar'
+      'posts sidebar';
+    column-gap: 4rem;
+    row-gap: 3.5rem;
+    align-items: start;
   }
 
-  .meta-card {
-    text-align: left;
-    padding: 1rem 1.1rem;
-    border-radius: 22px;
-    background: rgba(255, 253, 249, 0.78);
-    border: 1px solid var(--color-border);
-    box-shadow: 0 10px 24px rgba(71, 41, 23, 0.05);
+  .intro {
+    grid-area: intro;
+    padding: 0.5rem 0 2.75rem;
+    border-bottom: 1px solid var(--color-border);
   }
 
-  .meta-label {
-    display: block;
-    margin-bottom: 0.35rem;
-    color: var(--color-muted);
-    font-family: var(--font-sans);
-    font-size: 0.72rem;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    font-weight: 700;
-  }
-
-  .meta-card strong {
+  .intro h1 {
+    margin: 0 0 1rem;
     color: var(--color-text);
-    font-family: var(--font-sans);
-    font-size: 1.05rem;
-    font-weight: 800;
+    font-family: var(--font-serif);
+    font-size: clamp(3.25rem, 7vw, 5.5rem);
+    font-weight: 700;
+    line-height: 1.08;
+    letter-spacing: -0.02em;
   }
-  
-  .content {
+
+  .subtitle {
+    max-width: 36rem;
+    margin: 0;
+    color: var(--color-muted);
+    font-family: var(--font-serif);
+    font-size: 1.08rem;
+    line-height: 1.85;
+  }
+
+  .archive-meta {
+    display: grid;
+    grid-template-columns: 1.45fr 0.75fr 0.8fr;
+    margin-top: 2.25rem;
+    border-top: 1px solid var(--color-border);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .archive-meta > div {
+    min-width: 0;
+    padding: 0.9rem 1.25rem;
+    border-left: 1px solid var(--color-border);
+  }
+
+  .archive-meta > div:first-child {
+    padding-left: 0;
+    border-left: 0;
+  }
+
+  .archive-meta dt {
+    color: var(--color-muted);
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+
+  .archive-meta dd {
+    margin-top: 0.25rem;
+    color: var(--color-text);
+    font-size: 0.98rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  .archive-sidebar {
+    grid-area: sidebar;
+    position: sticky;
+    top: 1.5rem;
     min-width: 0;
   }
 
+  .sidebar-title {
+    margin-bottom: 0.6rem;
+    color: var(--color-muted);
+    font-size: 0.78rem;
+    font-weight: 650;
+  }
+
   .posts {
-    padding: 1.4rem;
-    border: 1px solid var(--color-border);
-    border-radius: 28px;
-    background: rgba(255, 252, 247, 0.68);
-    box-shadow: var(--shadow-soft);
-    backdrop-filter: blur(12px);
+    grid-area: posts;
+    min-width: 0;
   }
 
   .section-heading {
     display: flex;
     justify-content: space-between;
-    align-items: end;
-    gap: 1rem;
-    margin-bottom: 1.4rem;
-  }
-  
-  .post-card {
-    padding: 1.4rem 1.5rem;
+    align-items: baseline;
+    gap: 2rem;
     margin-bottom: 1rem;
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(252, 248, 242, 0.96));
-    border-radius: 24px;
-    border: 1px solid var(--color-border);
-    box-shadow: 0 12px 30px rgba(60, 34, 19, 0.05);
-    transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
   }
-  
-  .post-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 20px 36px rgba(60, 34, 19, 0.08);
-    border-color: var(--color-border-strong);
-  }
-  
-  .date {
-    display: inline-flex;
-    align-items: center;
-    padding: 0.3rem 0.6rem;
-    border-radius: 999px;
-    background: rgba(143, 61, 34, 0.08);
-    border: 1px solid rgba(143, 61, 34, 0.08);
-    font-size: 0.76rem;
-    color: var(--color-muted);
-    font-family: var(--font-sans);
+
+  .section-heading h2 {
+    font-family: var(--font-serif);
+    font-size: 1.8rem;
     font-weight: 700;
-    letter-spacing: 0.04em;
+    line-height: 1.2;
   }
-  
-  .post-card h2 {
-    margin: 0.9rem 0 0.75rem;
-    font-size: 1.45rem;
+
+  .section-heading p {
+    color: var(--color-muted);
+    font-size: 0.86rem;
+  }
+
+  .post-list {
+    border-top: 1px solid var(--color-border-strong);
+  }
+
+  .post-row {
+    display: grid;
+    grid-template-columns: 7.25rem minmax(0, 1fr);
+    gap: 1.75rem;
+    padding: 1.55rem 0 1.65rem;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .date {
+    padding-top: 0.22rem;
+    color: var(--color-muted);
+    font-size: 0.78rem;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .post-summary h3 {
+    margin: 0 0 0.55rem;
+    font-family: var(--font-serif);
+    font-size: 1.38rem;
+    font-weight: 700;
     line-height: 1.35;
   }
-  
-  .post-card h2 a {
-    text-decoration: none;
+
+  .post-summary h3 a {
     color: var(--color-text);
-  }
-  
-  .post-card h2 a:hover {
-    color: var(--color-accent);
-  }
-  
-  .post-card p {
-    color: var(--color-muted);
-    line-height: 1.85;
-    font-size: 0.95rem;
-  }
-  
-  .section-title {
-    font-family: var(--font-sans);
-    font-size: 1.2rem;
-    color: var(--color-accent);
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    font-weight: 800;
+    text-decoration: none;
+    transition: color 160ms ease;
   }
 
-  .section-caption {
-    max-width: 22rem;
-    color: var(--color-muted);
-    font-size: 0.92rem;
-    text-align: right;
+  .post-summary h3 a:hover {
+    color: var(--color-accent);
   }
-  
+
+  .post-summary p {
+    color: var(--color-muted);
+    font-family: var(--font-serif);
+    font-size: 0.94rem;
+    line-height: 1.8;
+  }
+
   .no-posts {
+    padding: 1.5rem 0;
     color: var(--color-muted);
-    font-style: italic;
-    padding: 2rem;
-    text-align: center;
-    background: rgba(255, 255, 255, 0.92);
-    border-radius: 24px;
-    border: 1px solid var(--color-border);
+    border-top: 1px solid var(--color-border-strong);
+    border-bottom: 1px solid var(--color-border);
   }
-  
-  @media (max-width: 1200px) {
-    .sidebar-desktop {
-      display: none;
+
+  @media (max-width: 960px) {
+    .archive-grid {
+      max-width: 46rem;
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-areas:
+        'intro'
+        'sidebar'
+        'posts';
+      row-gap: 2.75rem;
     }
-    
-    .sidebar-mobile {
-      display: block;
+
+    .archive-sidebar {
+      position: static;
+      width: min(100%, 25rem);
     }
   }
 
-  @media (max-width: 720px) {
-    .wrapper {
-      padding: 0;
-    }
-
+  @media (max-width: 600px) {
     .intro {
-      padding: 2.3rem 1.2rem 1.4rem;
-      margin-bottom: 1.5rem;
-      border-radius: 28px;
+      padding: 0 0 2rem;
+    }
+
+    .intro h1 {
+      font-size: clamp(2.8rem, 15vw, 3.75rem);
+      letter-spacing: -0.02em;
     }
 
     .subtitle {
-      font-size: 0.98rem;
+      font-size: 1rem;
+      line-height: 1.75;
     }
 
-    .intro-meta {
-      grid-template-columns: 1fr;
-      gap: 0.75rem;
+    .archive-meta {
+      grid-template-columns: 1.25fr 0.7fr 0.8fr;
+      margin-top: 1.75rem;
     }
 
-    .sidebar-mobile {
-      max-width: none;
-      margin-bottom: 1.5rem;
+    .archive-meta > div {
+      padding: 0.75rem 0.55rem;
     }
 
-    .posts {
-      padding: 1rem;
-      border-radius: 24px;
+    .archive-meta > div:first-child {
+      padding-left: 0;
     }
 
     .section-heading {
-      flex-direction: column;
-      align-items: start;
-      margin-bottom: 1rem;
+      display: block;
     }
 
-    .section-caption {
-      max-width: none;
-      text-align: left;
-      font-size: 0.88rem;
+    .section-heading p {
+      margin-top: 0.35rem;
     }
 
-    .post-card {
-      padding: 1.1rem;
-      border-radius: 20px;
+    .post-row {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 0.45rem;
+      padding: 1.3rem 0 1.45rem;
     }
 
-    .post-card h2 {
-      font-size: 1.24rem;
+    .date {
+      padding-top: 0;
+    }
+
+    .post-summary h3 {
+      font-size: 1.25rem;
     }
   }
 </style>
