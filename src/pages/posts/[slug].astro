@@ -104,6 +104,11 @@ const excerpt = post.data.excerpt || post.body?.slice(0, 150).replace(/[#*\n]/g,
     padding-left: 0.25rem;
   }
 
+  .content :global(ol li::marker) {
+    font-size: 0.85em;
+    color: var(--color-muted);
+  }
+
   .content :global(li + li) {
     margin-top: 0.45rem;
   }
